@@ -9,10 +9,14 @@ ERROR_KEYWORDS = ["unstable", "explosion", "powered down"]
 def read_log_file(file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
-            return file.readlines()
+            lines = file.readlines()  # 파일 읽기
+            if not lines:  # 파일이 비어있으면 예외 처리
+                return "", []
+            return lines[0], lines[1:]  # 첫 줄(헤더), 나머지 로그 데이터 반환
     except Exception as e:
         print(f'오류: {e}')
-    return []
+        return "", []  # 빈 값 반환
+
 
 # 오류 로그를 저장하는 함수
 def save_error_logs(error_lines):
@@ -25,7 +29,7 @@ def main():
     print('Hello Mars\n')
 
     # 로그 파일 읽기
-    logs = read_log_file(LOG_FILE_PATH)
+    headers, logs = read_log_file(LOG_FILE_PATH)
 
     if logs:
         print('\n[ 로그 파일 내용 출력 (최신순) ]\n')
@@ -34,6 +38,7 @@ def main():
         logs.reverse() 
 
         # 출력
+        print(headers.strip())
         for line in logs:
             print(line.strip())
 
