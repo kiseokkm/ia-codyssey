@@ -1,0 +1,7 @@
+2025-03-31 04:42:45
+internal_temperature: 24.65
+external_temperature: 1.74
+internal_humidity: 51.18
+external_illuminance: 572.99
+internal_co2: 0.029
+internal_oxygen: 4.21
