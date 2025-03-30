@@ -18,9 +18,13 @@ def read_inventory(file_path):
             header = next(reader)  # 헤더는 따로 저장
             data = [row for row in reader]
         return header, data
+    except FileNotFoundError:
+        print(f'[오류] 파일을 찾을 수 없습니다: {file_path}')
+    except PermissionError:
+        print(f'[오류] 파일에 접근할 수 있는 권한이 없습니다: {file_path}')
     except Exception as e:
-        print(f'파일 읽기 오류: {e}')
-        return [], []
+        print(f'[오류] 파일 읽기 중 알 수 없는 오류 발생: {e}')
+    return [], []
 
 # 인화성 높은 순으로 정렬 & 0.7 이상되는 목록 필터링
 def get_dangerous_items(data, threshold=0.7):
@@ -45,8 +49,10 @@ def save_to_csv(file_path, header, data):
             writer.writerow(header)
             writer.writerows(data)
         print(f' 위험 물질 목록 저장 완료: {file_path}')
+    except PermissionError:
+        print(f'[오류] 파일 저장 권한이 없습니다: {file_path}')
     except Exception as e:
-        print(f'파일 저장 오류: {e}')
+        print(f'[오류] 파일 저장 중 오류 발생: {e}')
 
 # 메인 함수
 def main():
