@@ -28,7 +28,19 @@ class CalculatorCore:
             self.dot_used = True
             self.expression = self.result
 
-    def add_operator(self, op):
+    def add(self):
+        self._add_operator('+')
+
+    def subtract(self):
+        self._add_operator('-')
+
+    def multiply(self):
+        self._add_operator('×')
+
+    def divide(self):
+        self._add_operator('÷')
+
+    def _add_operator(self, op):
         if self.result and self.result[-1] not in '+-×÷':
             self.result += op
             self.dot_used = False
@@ -129,8 +141,14 @@ class Calculator(QWidget):
             self.core.percent()
         elif text == '=':
             self.core.equal()
-        elif text in '+-×÷':
-            self.core.add_operator(text)
+        elif text == '+':
+            self.core.add()
+        elif text == '-':
+            self.core.subtract()
+        elif text == '×':
+            self.core.multiply()
+        elif text == '÷':
+            self.core.divide()
         elif text == '.':
             self.core.input_dot()
         else:
