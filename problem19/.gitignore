@@ -1,0 +1,4 @@
+venv/
+todo_list.csv
+__pycache__/
+*.pyc
