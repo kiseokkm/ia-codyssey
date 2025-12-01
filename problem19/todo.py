@@ -3,6 +3,7 @@ import os
 from contextlib import asynccontextmanager
 from typing import Dict, List
 from fastapi import FastAPI, APIRouter, HTTPException
+from model import TodoItem 
 
 CSV_FILENAME = 'todo_list.csv'
 todo_list: List[Dict[str, str]] = []
@@ -26,6 +27,15 @@ def save_data_to_csv():
         writer.writeheader()
         for item in todo_list:
             writer.writerow(item)
+
+
+def find_todo_index(todo_id: str) -> int:
+    load_data_from_csv()
+    try:
+        index = next(i for i, todo in enumerate(todo_list) if todo['id'] == todo_id)
+        return index
+    except StopIteration:
+        raise HTTPException(status_code=404, detail='ID를 찾을 수 없습니다.')
 
 
 @asynccontextmanager
@@ -62,6 +72,32 @@ async def add_todo(item: Dict) -> Dict:
 async def retrieve_todo() -> Dict:
     load_data_from_csv()
     return {'total_count': len(todo_list), 'data': todo_list}
+
+
+@router.get('/todo/{todo_id}')
+async def get_single_todo(todo_id: str) -> Dict:
+    index = find_todo_index(todo_id)
+    return {'data': todo_list[index]}
+
+
+@router.put('/todo/{todo_id}')
+async def update_todo(todo_id: str, item: TodoItem) -> Dict:
+    index = find_todo_index(todo_id)
+    
+    todo_list[index]['content'] = item.content
+    save_data_to_csv()
+    
+    return {'msg': '수정 성공', 'data': todo_list[index]}
+
+
+@router.delete('/todo/{todo_id}')
+async def delete_single_todo(todo_id: str) -> Dict:
+    index = find_todo_index(todo_id)
+    
+    deleted_item = todo_list.pop(index)
+    save_data_to_csv()
+    
+    return {'msg': '삭제 성공', 'data': deleted_item}
 
 
 app.include_router(router)
